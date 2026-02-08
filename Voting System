@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.8.0 <0.9.0;
+
+contract Ballot {
+    address public admin;
+    bool public ballotOpen = false; 
+    
+    struct Person {
+        string name;
+        uint256 count;
+    }
+
+    Person[] public candidates;
+    
+    
+    mapping(address => bool) public isRegistered; 
+    mapping(address => bool) public votedAlready;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    modifier onlyadmin() {
+        require(msg.sender == admin, "Not authorized");
+        _;
+    }
+
+    modifier isBallotOpen() {
+        require(ballotOpen == true, "The poll is closed");
+        _;
+    }
+
+    function registerCandidate(string memory names) public onlyadmin {
+        candidates.push(Person(names, 0));
+    }
+
+   
+    function authorizeVoter(address voters) public onlyadmin {
+        isRegistered[voters] = true;
+    }
+
+   
+    function setPollStatus(bool isOpen) public onlyadmin {
+        ballotOpen = isOpen;
+    }
+
+    
+    function giveVote(uint256 index) public isBallotOpen {
+       
+        require(isRegistered[msg.sender] == true, "You are not registered to vote");
+        
+        require(votedAlready[msg.sender] == false, "You cannot vote twice");
+        
+        require(index < candidates.length, "Candidate not found");
+
+        candidates[index].count += 1;
+        votedAlready[msg.sender] = true;
+    }
+}
