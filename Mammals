@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.8.0 <0.9.0;
+
+contract Mammal {
+    bool public canBreathe = true;
+
+    modifier livingCheck() {
+        require(canBreathe == true, "Must be a dead mammal");
+        _;
+    }
+
+    function eat() public pure returns (string memory) {
+        return "The mammal is eating food";
+    }
+}
+
+contract Dog is Mammal {
+    function playFetch() public livingCheck view returns (string memory) {
+        return "The dog is chasing the ball!";
+    }
+}
+
+contract Monkey is Mammal {
+    function swing() public livingCheck view returns (string memory) {
+        return "The monkey is swinging on vines!";
+    }
+}
